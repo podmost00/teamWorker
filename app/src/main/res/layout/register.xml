@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:rotationX="0">
+
+
+    <TextView
+        android:id="@+id/register_label1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_marginBottom="148dp"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Реєстрація нового користувача"
+        android:textColor="#2C2C2C"
+        android:textColorHighlight="#393838"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/register_label2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/register_label2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Вже зареєстровані? Увійти"
+        android:textColor="#2C2C2C"
+        android:textColorHighlight="#393838"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/register_firstName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/register_firstName"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:fontFamily="@font/roboto"
+        android:hint="Введіть Ім'я*"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.389" />
+
+    <EditText
+        android:id="@+id/register_secondName"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_margin="15dp"
+        android:fontFamily="@font/roboto"
+        android:hint="Введіть прізвище*"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/register_firstName" />
+
+    <EditText
+        android:id="@+id/register_email"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_margin="15dp"
+        android:fontFamily="@font/roboto"
+        android:hint="Введіть пошту*"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/register_secondName" />
+
+    <EditText
+        android:id="@+id/register_password"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_margin="15dp"
+        android:fontFamily="@font/roboto"
+        android:hint="Введіть пароль*"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/register_email" />
+
+    <Button
+        android:id="@+id/register_regButton"
+        android:layout_width="166dp"
+        android:layout_height="40dp"
+        android:layout_margin="15dp"
+        android:backgroundTint="#3F51B5"
+        android:text="Увійти"
+        app:cornerRadius="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/register_password"
+        />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
