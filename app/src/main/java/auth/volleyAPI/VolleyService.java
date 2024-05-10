@@ -33,7 +33,9 @@ public class VolleyService {
     }
 
     public void login(String url, JSONObject jsonRequest, final AuthCallback callback) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonRequest,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                url,
+                jsonRequest,
                 callback::onSuccess,
                 error -> {
                     String errorMessage = error.getMessage();

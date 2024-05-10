@@ -18,7 +18,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name="admin.adminMain"
+            android:name="user.UserMain"
+            android:exported="false" />
+        <activity
+            android:name="manager.ManagerMain"
+            android:exported="false" />
+        <activity
+            android:name="admin.AdminMain"
             android:exported="false" />
         <activity
             android:name="auth.login.Login"

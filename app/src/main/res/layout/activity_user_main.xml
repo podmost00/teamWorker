@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="admin.AdminMain">
+    tools:context="user.UserMain">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="295dp"
         android:layout_height="76dp"
-        android:text="адмін"
+        android:text="юзер"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

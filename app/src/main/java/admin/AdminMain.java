@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.example.teamworker.R;
 
-public class adminMain extends AppCompatActivity {
+public class AdminMain extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
