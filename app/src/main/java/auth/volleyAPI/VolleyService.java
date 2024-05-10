@@ -1,10 +1,12 @@
-package com.example.teamworker.auth.volleyAPI;
+package auth.volleyAPI;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -43,4 +45,27 @@ public class VolleyService {
         );
         addToRequestQueue(jsonObjectRequest);
     }
+
+    public void register(String url, JSONObject data, AuthCallback callback) {
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        callback.onError(error);
+                    }
+                });
+
+
+        getRequestQueue().add(request);
+    }
+
 }
