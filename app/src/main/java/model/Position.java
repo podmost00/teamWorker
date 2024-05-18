@@ -1,6 +1,8 @@
 package model;
 
-public class Position {
+import java.io.Serializable;
+
+public class Position implements Serializable {
     private int id;
     private String name;
     private Project project;

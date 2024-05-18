@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Statistics {
+public class Statistics implements Serializable {
     private String username;
     private String name;
     private String surname;

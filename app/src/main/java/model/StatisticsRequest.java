@@ -1,6 +1,8 @@
 package model;
 
-public class StatisticsRequest {
+import java.io.Serializable;
+
+public class StatisticsRequest implements Serializable {
     private String time1;
     private String time2;
 

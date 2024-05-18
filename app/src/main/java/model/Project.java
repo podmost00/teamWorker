@@ -1,11 +1,12 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import model.Position;
 import model.User;
 
-public class Project {
+public class Project implements Serializable {
     private int id;
     private String name;
     private String createTime;

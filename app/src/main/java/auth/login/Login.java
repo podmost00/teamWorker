@@ -21,7 +21,10 @@ import com.example.teamworker.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import auth.register.Register;
 import auth.volleyAPI.AuthCallback;
@@ -29,6 +32,10 @@ import auth.volleyAPI.TokenStorageService;
 import admin.AdminMain;
 import auth.volleyAPI.VolleyService;
 import manager.ManagerMain;
+import model.Position;
+import model.Project;
+import model.Role;
+import model.User;
 import user.UserMain;
 
 public class Login extends AppCompatActivity {
@@ -39,7 +46,7 @@ public class Login extends AppCompatActivity {
     private Button loginButton;
     private TextView regLink;
     private VolleyService volleyService;
-    private static final String AUTH_API="http://192.168.0.108:8080/api/v1/auth/";
+    private static final String AUTH_API = "http://192.168.0.108:8080/api/v1/auth/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +60,9 @@ public class Login extends AppCompatActivity {
         volleyService = new VolleyService(this);
         tokenStorage = new TokenStorageService(this);
 
-        regLink.setOnClickListener(new View.OnClickListener(){
+        regLink.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent intent = new Intent(Login.this, Register.class);
                 startActivity(intent);
             }
@@ -79,49 +86,90 @@ public class Login extends AppCompatActivity {
 
                 volleyService.login(loginUrl, credentials, new AuthCallback() {
                     @Override
-                    public void onSuccess(JSONObject response) {
+                    public void onSuccess(JSONObject response) throws JSONException {
                         try {
                             String token = response.getString("token");
                             String username = response.getString("username");
-
                             tokenStorage.saveToken(token);
-
                             String userUrl = "http://192.168.0.108:8080/api/v1/users/get/" + username;
                             JsonObjectRequest userRequest = new JsonObjectRequest(Request.Method.GET, userUrl, null,
                                     new Response.Listener<JSONObject>() {
                                         @Override
                                         public void onResponse(JSONObject userResponse) {
                                             Log.d("RESPONSE", userResponse.toString());
-                                            JSONArray rolesArray = null;
-                                            String role;
-                                            try {
-                                                rolesArray = userResponse.getJSONArray("roles");
-                                                JSONObject firstRoleObject = rolesArray.getJSONObject(0); // Обрати першу роль з масиву
-                                                role = firstRoleObject.getString("name");
-                                            } catch (JSONException e) {
-                                                throw new RuntimeException(e);
-                                            }
 
-                                            if (!role.isEmpty()) {
-                                                if (role.equals("ROLE_ADMIN")) {
-                                                    Intent intent = new Intent(Login.this, AdminMain.class);
-                                                    startActivity(intent);
-                                                } else if (role.equals("ROLE_MANAGER")) {
-                                                    Intent intent = new Intent(Login.this, ManagerMain.class);
+                                            try {
+                                                User user = new User();
+                                                user.setId(userResponse.getInt("id"));
+                                                user.setUsername(userResponse.getString("username"));
+                                                user.setName(userResponse.getString("name"));
+                                                user.setSurname(userResponse.getString("surname"));
+
+                                                JSONArray positionsArray = userResponse.getJSONArray("position");
+                                                List<Position> positions = new ArrayList<>();
+
+                                                for (int i = 0; i < positionsArray.length(); i++) {
+                                                    JSONObject positionObject = positionsArray.getJSONObject(i);
+
+                                                    Position position = new Position();
+                                                    position.setId(positionObject.getInt("id"));
+                                                    position.setName(positionObject.getString("name"));
+
+                                                    JSONObject projectObject = positionObject.getJSONObject("project");
+                                                    Project project = new Project();
+                                                    project.setId(projectObject.getInt("id"));
+                                                    project.setName(projectObject.getString("name"));
+                                                    project.setCreateTime(projectObject.getString("createTime"));
+                                                    project.setProjectStage(projectObject.getString("projectStage"));
+                                                    project.setProjectType(projectObject.getString("projectType"));
+
+                                                    position.setProject(project);
+                                                    positions.add(position);
+                                                }
+                                                user.setPosition(positions);
+
+                                                JSONArray rolesArray = userResponse.getJSONArray("roles");
+                                                List<Role> roles = new ArrayList<>();
+
+                                                for (int i = 0; i < rolesArray.length(); i++) {
+                                                    JSONObject roleObject = rolesArray.getJSONObject(i);
+
+                                                    Role role = new Role();
+                                                    role.setId(roleObject.getInt("id"));
+                                                    role.setName(roleObject.getString("name"));
+
+                                                    roles.add(role);
+                                                }
+                                                user.setRoles(roles);
+
+                                                Log.d("USER_OBJECT", user.toString());
+
+                                                if (roles.size() > 0) {
+                                                    String userRole = roles.get(0).getName();
+                                                    Intent intent;
+                                                    if (userRole.equals("ROLE_ADMIN")) {
+                                                        intent = new Intent(Login.this, AdminMain.class);
+                                                    } else if (userRole.equals("ROLE_MANAGER")) {
+                                                        intent = new Intent(Login.this, ManagerMain.class);
+                                                    } else {
+                                                        intent = new Intent(Login.this, UserMain.class);
+                                                    }
+                                                    intent.putExtra("USER_OBJECT", user);
+                                                    Toast.makeText(Login.this, "Вітаємо, " + user.getName(), Toast.LENGTH_SHORT).show();
                                                     startActivity(intent);
                                                 } else {
-                                                    Intent intent = new Intent(Login.this, UserMain.class);
-                                                    startActivity(intent);
+                                                    Toast.makeText(Login.this, "Невідома роль", Toast.LENGTH_SHORT).show();
                                                 }
-                                            } else {
-                                                Toast.makeText(Login.this, "Role not received", Toast.LENGTH_SHORT).show();
+
+                                            } catch (JSONException e) {
+                                                throw new RuntimeException(e);
                                             }
                                         }
                                     },
                                     new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
-                                            Toast.makeText(Login.this, "Error getting user data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(Login.this, "Помилка отримання даних користувача: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }) {
                                 @Override
@@ -136,17 +184,16 @@ public class Login extends AppCompatActivity {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(Login.this, "Error processing server response", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Помилка сервера", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onError(VolleyError error) {
-                        Toast.makeText(Login.this, "Network error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "Невірний логін або пароль", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
-
     }
 }

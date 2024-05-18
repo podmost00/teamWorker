@@ -1,11 +1,12 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import model.Position;
 import model.Role;
 
-public class User {
+public class User implements Serializable {
     private int id;
     private String username;
     private String name;
@@ -59,5 +60,17 @@ public class User {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", position=" + position +
+                ", roles=" + roles +
+                '}';
     }
 }

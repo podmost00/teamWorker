@@ -1,0 +1,18 @@
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_tasks"
+        android:title="Завдання"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_statistics"
+        android:title="Статистика"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_logout"
+        android:title="Вихід"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+</menu>

@@ -30,38 +30,38 @@ public class TokenStorageService {
         return sharedPreferences.getString(TOKEN_KEY, "");
     }
 
-    public void saveUser(User user) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String userJson = new Gson().toJson(user);
-        editor.putString(USER_KEY, userJson);
-        editor.apply();
-    }
+//    public void saveUser(User user) {
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        String userJson = new Gson().toJson(user);
+//        editor.putString(USER_KEY, userJson);
+//        editor.apply();
+//    }
 
-    public void saveUserData(String userDataJson) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(USER_DATA_KEY, userDataJson);
-        editor.apply();
-    }
+//    public void saveUserData(String userDataJson) {
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString(USER_DATA_KEY, userDataJson);
+//        editor.apply();
+//    }
 
-    public String getUserData() {
-        return sharedPreferences.getString(USER_DATA_KEY, "");
-    }
+//    public String getUserData() {
+//        return sharedPreferences.getString(USER_DATA_KEY, "");
+//    }
 
 
-    public User getUser() {
-        String userJson = sharedPreferences.getString(USER_KEY, "");
-        return new Gson().fromJson(userJson, User.class);
-    }
+//    public User getUser() {
+//        String userJson = sharedPreferences.getString(USER_KEY, "");
+//        return new Gson().fromJson(userJson, User.class);
+//    }
 
-    public void setRole(Role role) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(USER_ROLE, role.getName());
-        editor.apply();
-    }
+//    public void setRole(Role role) {
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString(USER_ROLE, role.getName());
+//        editor.apply();
+//    }
 
-    public String getRole() {
-        return sharedPreferences.getString(USER_ROLE, "");
-    }
+//    public String getRole() {
+//        return sharedPreferences.getString(USER_ROLE, "");
+//    }
 
     public void logOut() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
