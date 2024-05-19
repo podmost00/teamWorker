@@ -2,6 +2,7 @@ package user;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import auth.volleyAPI.AuthCallback;
+import auth.volleyAPI.GetCallback;
 import auth.volleyAPI.VolleyService;
 import model.User;
 
@@ -109,14 +111,16 @@ public class UserMain extends AppCompatActivity {
 
     private void getStatsMonths() {
         String url = baseUrl + "/get/stats/months/";
-        volleyService.makeGetRequest(url, new AuthCallback() {
+        volleyService.makeGetRequest(url, new GetCallback() {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONArray response) {
+                Log.d("SUCCESS","SUCCESS");
                 List<Entry> entries = new ArrayList<>();
                 try {
-                    JSONArray data = response.getJSONArray("data");
-                    for (int i = 0; i < data.length(); i++) {
-                        JSONObject monthData = data.getJSONObject(i);
+
+                    Log.d("DATA", response.toString());
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject monthData = response.getJSONObject(i);
                         String monthName = monthData.getString("name");
                         int taskCount = monthData.getInt("number");
                         entries.add(new Entry(i, taskCount));
@@ -139,14 +143,13 @@ public class UserMain extends AppCompatActivity {
 
     private void getStatsType() {
         String url = baseUrl + "/get/stats/types/";
-        volleyService.makeGetRequest(url, new AuthCallback() {
+        volleyService.makeGetRequest(url, new GetCallback() {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONArray response) {
                 List<BarEntry> entries = new ArrayList<>();
                 try {
-                    JSONArray data = response.getJSONArray("data");
-                    for (int i = 0; i < data.length(); i++) {
-                        JSONObject typeData = data.getJSONObject(i);
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject typeData = response.getJSONObject(i);
                         String typeName = typeData.getString("name");
                         int taskCount = typeData.getInt("number");
                         entries.add(new BarEntry(i, taskCount));
@@ -169,14 +172,14 @@ public class UserMain extends AppCompatActivity {
 
     private void getStatsStage() {
         String url = baseUrl + "/get/stats/stages/";
-        volleyService.makeGetRequest(url, new AuthCallback() {
+        volleyService.makeGetRequest(url, new GetCallback() {
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(JSONArray response) {
                 List<PieEntry> entries = new ArrayList<>();
                 try {
-                    JSONArray data = response.getJSONArray("data");
-                    for (int i = 0; i < data.length(); i++) {
-                        JSONObject stageData = data.getJSONObject(i);
+
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject stageData = response.getJSONObject(i);
                         String stageName = stageData.getString("name");
                         int taskCount = stageData.getInt("number");
                         entries.add(new PieEntry(taskCount, stageName));

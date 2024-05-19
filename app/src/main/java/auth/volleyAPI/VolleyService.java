@@ -12,6 +12,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -87,12 +88,13 @@ public class VolleyService {
 
         getRequestQueue().add(request);
     }
-    public void makeGetRequest(String url, final AuthCallback callback) {
+    public void makeGetRequest(String url, final GetCallback callback) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
                     try {
-                        JSONObject jsonResponse = new JSONObject(response);
-                        callback.onSuccess(jsonResponse);
+
+                        JSONArray jsonArrayResponse = new JSONArray(response);
+                        callback.onSuccess(jsonArrayResponse);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
