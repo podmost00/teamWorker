@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -23,6 +25,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONArray;
@@ -32,10 +35,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import auth.volleyAPI.AuthCallback;
-import auth.volleyAPI.GetCallback;
+import auth.volleyAPI.GetArrayCallback;
+import auth.volleyAPI.GetStringCallback;
 import auth.volleyAPI.VolleyService;
-import model.User;
 
 public class UserMain extends AppCompatActivity {
 
@@ -46,24 +48,31 @@ public class UserMain extends AppCompatActivity {
     private final String baseUrl = "http://192.168.0.108:8080/api/v1/tasks";
     private int id;
 
+    private TextView totalTasks, avgDuration, mostTasksMonth, shortestDurationTask, onTimeTasksPercentage;
+    private ProgressBar onTimeTasksProgress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_main);
 
-        // Налаштування Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Знаходимо елементи інтерфейсу
         tasksPerMonthChart = findViewById(R.id.tasksPerMonthChart);
         taskCompletionStagesChart = findViewById(R.id.taskCompletionStagesChart);
         taskTypesChart = findViewById(R.id.taskTypesChart);
 
+        totalTasks = findViewById(R.id.totalTasks);
+        avgDuration = findViewById(R.id.avgDuration);
+        mostTasksMonth = findViewById(R.id.mostTasksMonth);
+        onTimeTasksProgress = findViewById(R.id.onTimeTasksProgress);
+        onTimeTasksPercentage = findViewById(R.id.onTimeTasksPercentage);
+
         volleyService = new VolleyService(this);
-//        User user = (User) getIntent().getSerializableExtra("USER_OBJECT");
-//        id = user.getId();
+
         setupCharts();
+        loadSummaryData();
     }
 
     @Override
@@ -109,23 +118,94 @@ public class UserMain extends AppCompatActivity {
         getStatsStage();
     }
 
-    private void getStatsMonths() {
-        String url = baseUrl + "/get/stats/months/";
-        volleyService.makeGetRequest(url, new GetCallback() {
+    private void loadSummaryData() {
+        getAvgDuration();
+        getMostTasksMonth();
+        getOnTimeTasks();
+        getAllTasks();
+    }
+
+    private void getAllTasks() {
+        String url = baseUrl + "/get/all/RELEASED";
+        volleyService.makeGetArrayRequest(url, new GetArrayCallback() {
             @Override
             public void onSuccess(JSONArray response) {
-                Log.d("SUCCESS","SUCCESS");
+                totalTasks.setText("Всього зроблено: " + response.length());
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void getAvgDuration() {
+        String url = baseUrl + "/get/stats/average/time";
+        volleyService.makeGetStringRequest(url, new GetStringCallback() {
+            @Override
+            public void onSuccess(String response) {
+                String time = response.substring(13, 21);
+                avgDuration.setText("Середня тривалість виконання: " + time);
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getMostTasksMonth() {
+        String url = baseUrl + "/get/stats/best/month";
+        volleyService.makeGetStringRequest(url, new GetStringCallback() {
+            @Override
+            public void onSuccess(String response) {
+                mostTasksMonth.setText("Найбільше за місяць: " + response);
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+    private void getOnTimeTasks() {
+        String url = baseUrl + "/get/stats/ontime";
+        volleyService.makeGetStringRequest(url, new GetStringCallback() {
+            @Override
+            public void onSuccess(String response) {
+                onTimeTasksProgress.setProgress(Integer.parseInt(response));
+                onTimeTasksPercentage.setText(response + "% виконано вчасно");
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getStatsMonths() {
+        String url = baseUrl + "/get/stats/months";
+        volleyService.makeGetArrayRequest(url, new GetArrayCallback() {
+            @Override
+            public void onSuccess(JSONArray response) {
                 List<Entry> entries = new ArrayList<>();
                 try {
-
-                    Log.d("DATA", response.toString());
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject monthData = response.getJSONObject(i);
-                        String monthName = monthData.getString("name");
+                        String month = monthData.getString("name");
                         int taskCount = monthData.getInt("number");
                         entries.add(new Entry(i, taskCount));
                     }
-                    LineDataSet dataSet = new LineDataSet(entries, "Кількість завдань по місяцях");
+                    LineDataSet dataSet = new LineDataSet(entries, "Завдання по місяцях");
+                    dataSet.setColor(Color.BLUE);
+                    dataSet.setValueTextColor(Color.BLACK);
                     LineData lineData = new LineData(dataSet);
                     tasksPerMonthChart.setData(lineData);
                     tasksPerMonthChart.invalidate();
@@ -136,56 +216,27 @@ public class UserMain extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getStatsType() {
-        String url = baseUrl + "/get/stats/types/";
-        volleyService.makeGetRequest(url, new GetCallback() {
-            @Override
-            public void onSuccess(JSONArray response) {
-                List<BarEntry> entries = new ArrayList<>();
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject typeData = response.getJSONObject(i);
-                        String typeName = typeData.getString("name");
-                        int taskCount = typeData.getInt("number");
-                        entries.add(new BarEntry(i, taskCount));
-                    }
-                    BarDataSet dataSet = new BarDataSet(entries, "Типи завдань");
-                    BarData barData = new BarData(dataSet);
-                    taskTypesChart.setData(barData);
-                    taskTypesChart.invalidate();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onError(VolleyError error) {
-                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d("ERROR","ERROR");
+                error.printStackTrace();
             }
         });
     }
 
     private void getStatsStage() {
         String url = baseUrl + "/get/stats/stages/";
-        volleyService.makeGetRequest(url, new GetCallback() {
+        volleyService.makeGetArrayRequest(url, new GetArrayCallback() {
             @Override
             public void onSuccess(JSONArray response) {
                 List<PieEntry> entries = new ArrayList<>();
                 try {
-
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject stageData = response.getJSONObject(i);
                         String stageName = stageData.getString("name");
                         int taskCount = stageData.getInt("number");
                         entries.add(new PieEntry(taskCount, stageName));
                     }
-                    PieDataSet dataSet = new PieDataSet(entries, "Стадії завдань");
-                    dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                    PieDataSet dataSet = new PieDataSet(entries, "Етапи виконання завдань");
+                    dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
                     PieData pieData = new PieData(dataSet);
                     taskCompletionStagesChart.setData(pieData);
                     taskCompletionStagesChart.invalidate();
@@ -196,7 +247,41 @@ public class UserMain extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
+            }
+        });
+    }
+
+    private void getStatsType() {
+        String url = baseUrl + "/get/stats/types/";
+        volleyService.makeGetArrayRequest(url, new GetArrayCallback() {
+            @Override
+            public void onSuccess(JSONArray response) {
+                List<BarEntry> entries = new ArrayList<>();
+                List<String> labels = new ArrayList<>();
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject typeData = response.getJSONObject(i);
+                        String typeName = typeData.getString("name");
+                        int taskCount = typeData.getInt("number");
+                        entries.add(new BarEntry(i, taskCount));
+                        labels.add(typeName);
+                    }
+                    BarDataSet dataSet = new BarDataSet(entries, "Типи завдань");
+                    dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                    BarData barData = new BarData(dataSet);
+                    taskTypesChart.setData(barData);
+
+                    taskTypesChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
+                    taskTypesChart.invalidate(); // refresh chart
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                error.printStackTrace();
             }
         });
     }

@@ -88,7 +88,7 @@ public class VolleyService {
 
         getRequestQueue().add(request);
     }
-    public void makeGetRequest(String url, final GetCallback callback) {
+    public void makeGetArrayRequest(String url, final GetArrayCallback callback) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
                     try {
@@ -111,4 +111,27 @@ public class VolleyService {
 
         requestQueue.add(stringRequest);
     }
+
+    public void makeGetStringRequest(String url, final GetStringCallback callback) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                response -> {
+                    try {
+                        callback.onSuccess(response);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                },
+                callback::onError) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = tokenStorageService.getToken();
+                headers.put("Authorization", "Bearer " + token);
+                return headers;
+            }
+        };
+
+        requestQueue.add(stringRequest);
+    }
+
 }
