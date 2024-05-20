@@ -1,10 +1,7 @@
-package auth.volleyAPI;
+package services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.google.gson.Gson;
-import model.Role;
-import model.User;
 
 public class TokenStorageService {
     private static final String TOKEN_KEY = "auth-token";

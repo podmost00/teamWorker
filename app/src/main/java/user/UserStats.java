@@ -1,10 +1,12 @@
 package user;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,11 +37,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import auth.volleyAPI.GetArrayCallback;
-import auth.volleyAPI.GetStringCallback;
-import auth.volleyAPI.VolleyService;
+import callback.GetArrayCallback;
+import callback.GetStringCallback;
+import services.VolleyService;
 
-public class UserMain extends AppCompatActivity {
+public class UserStats extends AppCompatActivity {
 
     private LineChart tasksPerMonthChart;
     private PieChart taskCompletionStagesChart;
@@ -47,7 +49,6 @@ public class UserMain extends AppCompatActivity {
     private VolleyService volleyService;
     private final String baseUrl = "http://192.168.0.108:8080/api/v1/tasks";
     private int id;
-
     private TextView totalTasks, avgDuration, mostTasksMonth, shortestDurationTask, onTimeTasksPercentage;
     private ProgressBar onTimeTasksProgress;
 
@@ -81,6 +82,27 @@ public class UserMain extends AppCompatActivity {
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_tasks) {
+            // Toast.makeText(this, "Завдання натиснуто", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, UserTasks.class));
+            return true;
+        } else if (item.getItemId() == R.id.action_statistics) {
+            Toast.makeText(this, "Статистика натиснуто", Toast.LENGTH_SHORT).show();
+            // startActivity(new Intent(this, UserStats.class));
+            return true;
+        } else if (item.getItemId() == R.id.action_logout) {
+            Toast.makeText(this, "Вихід натиснуто", Toast.LENGTH_SHORT).show();
+            // startActivity(new Intent(this, .class));
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 
     private void setupCharts() {
         setupLineChart();
@@ -135,7 +157,7 @@ public class UserMain extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserStats.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -152,7 +174,7 @@ public class UserMain extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserStats.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -167,7 +189,7 @@ public class UserMain extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserStats.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -185,7 +207,7 @@ public class UserMain extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                Toast.makeText(UserMain.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserStats.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

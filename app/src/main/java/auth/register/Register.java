@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.VolleyError;
 import com.example.teamworker.R;
 import auth.login.Login;
-import auth.volleyAPI.AuthCallback;
-import auth.volleyAPI.VolleyService;
+import callback.AuthCallback;
+import services.VolleyService;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,8 +1,6 @@
 package auth.login;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,16 +25,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import auth.register.Register;
-import auth.volleyAPI.AuthCallback;
-import auth.volleyAPI.TokenStorageService;
+import callback.AuthCallback;
+import services.TokenStorageService;
 import admin.AdminMain;
-import auth.volleyAPI.VolleyService;
+import services.VolleyService;
 import manager.ManagerMain;
 import model.Position;
 import model.Project;
 import model.Role;
 import model.User;
-import user.UserMain;
+import user.UserStats;
 
 public class Login extends AppCompatActivity {
 
@@ -152,7 +150,7 @@ public class Login extends AppCompatActivity {
                                                     } else if (userRole.equals("ROLE_MANAGER")) {
                                                         intent = new Intent(Login.this, ManagerMain.class);
                                                     } else {
-                                                        intent = new Intent(Login.this, UserMain.class);
+                                                        intent = new Intent(Login.this, UserStats.class);
                                                     }
                                                     intent.putExtra("USER_OBJECT", user);
                                                     Toast.makeText(Login.this, "Вітаємо, " + user.getName(), Toast.LENGTH_SHORT).show();

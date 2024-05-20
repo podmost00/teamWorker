@@ -1,4 +1,4 @@
-package auth.volleyAPI;
+package services;
 
 import android.content.Context;
 import android.util.Log;
@@ -18,6 +18,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import callback.AuthCallback;
+import callback.GetArrayCallback;
+import callback.GetStringCallback;
 
 public class VolleyService {
     private RequestQueue requestQueue;

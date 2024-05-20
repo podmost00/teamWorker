@@ -1,4 +1,4 @@
-package auth.volleyAPI;
+package services;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -8,6 +8,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import callback.AuthCallback;
 
 public class AuthService {
     private RequestQueue requestQueue;
