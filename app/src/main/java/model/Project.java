@@ -7,6 +7,14 @@ import model.Position;
 import model.User;
 
 public class Project implements Serializable {
+
+    public Project() {
+    }
+
+    public Project(String name) {
+        this.name = name;
+    }
+
     private int id;
     private String name;
     private String createTime;

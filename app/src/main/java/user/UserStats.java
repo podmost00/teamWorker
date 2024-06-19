@@ -18,6 +18,7 @@ import com.example.teamworker.R;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -37,8 +38,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import auth.login.Login;
 import callback.GetArrayCallback;
 import callback.GetStringCallback;
+import services.TokenStorageService;
 import services.VolleyService;
 
 public class UserStats extends AppCompatActivity {
@@ -47,7 +50,7 @@ public class UserStats extends AppCompatActivity {
     private PieChart taskCompletionStagesChart;
     private BarChart taskTypesChart;
     private VolleyService volleyService;
-    private final String baseUrl = "http://192.168.0.108:8080/api/v1/tasks";
+    private final String baseUrl = "http://192.168.56.1:8080/api/v1/tasks";
     private int id;
     private TextView totalTasks, avgDuration, mostTasksMonth, shortestDurationTask, onTimeTasksPercentage;
     private ProgressBar onTimeTasksProgress;
@@ -86,16 +89,14 @@ public class UserStats extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_tasks) {
-            // Toast.makeText(this, "Завдання натиснуто", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, UserTasks.class));
             return true;
         } else if (item.getItemId() == R.id.action_statistics) {
-            Toast.makeText(this, "Статистика натиснуто", Toast.LENGTH_SHORT).show();
-            // startActivity(new Intent(this, UserStats.class));
+            startActivity(new Intent(this, UserStats.class));
             return true;
         } else if (item.getItemId() == R.id.action_logout) {
-            Toast.makeText(this, "Вихід натиснуто", Toast.LENGTH_SHORT).show();
-            // startActivity(new Intent(this, .class));
+            Toast.makeText(this, "Вихід", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, Login.class));
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -115,7 +116,24 @@ public class UserStats extends AppCompatActivity {
         tasksPerMonthChart.getDescription().setEnabled(false);
         tasksPerMonthChart.getXAxis().setLabelRotationAngle(45);
         tasksPerMonthChart.getAxisLeft().setAxisMinimum(0);
+
+        // Налаштування позиції осі X
+        XAxis xAxis = tasksPerMonthChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelCount(6, true); // 6 міток, рівномірно розподілених
+
+        // Налаштування осі Y
+        tasksPerMonthChart.getAxisRight().setEnabled(false); // Відключення правої осі Y
+        tasksPerMonthChart.getAxisLeft().setDrawGridLines(false); // Відключення сітки на лівій осі Y
+        tasksPerMonthChart.getAxisLeft().setAxisMinimum(0f); // Мінімальне значення осі Y
+
+        // Налаштування легенди
+        tasksPerMonthChart.getLegend().setEnabled(true); // Включення легенди, якщо потрібно
+
+        tasksPerMonthChart.invalidate(); // Оновлення графіка
     }
+
 
     private void setupPieChart() {
         taskCompletionStagesChart.setUsePercentValues(true);
@@ -127,12 +145,39 @@ public class UserStats extends AppCompatActivity {
         taskCompletionStagesChart.setHoleRadius(58f);
         taskCompletionStagesChart.setTransparentCircleRadius(61f);
         taskCompletionStagesChart.setDrawCenterText(true);
+
+        // Додаткові налаштування (якщо потрібно)
+        taskCompletionStagesChart.setEntryLabelColor(Color.BLACK); // Колір тексту на діаграмі
+        taskCompletionStagesChart.setEntryLabelTextSize(12f); // Розмір тексту на діаграмі
+
+        // Налаштування легенди
+        taskCompletionStagesChart.getLegend().setEnabled(true); // Включення легенди, якщо потрібно
+
+        taskCompletionStagesChart.invalidate(); // Оновлення діаграми
     }
+
 
     private void setupBarChart() {
         taskTypesChart.getDescription().setEnabled(false);
         taskTypesChart.getAxisLeft().setAxisMinimum(0);
+
+        // Налаштування осі X
+        XAxis xAxis = taskTypesChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelCount(6, true); // 6 міток, рівномірно розподілених
+
+        // Налаштування осі Y
+        taskTypesChart.getAxisRight().setEnabled(false); // Відключення правої осі Y
+        taskTypesChart.getAxisLeft().setDrawGridLines(false); // Відключення сітки на лівій осі Y
+        taskTypesChart.getAxisLeft().setAxisMinimum(0f); // Мінімальне значення осі Y
+
+        // Налаштування легенди
+        taskTypesChart.getLegend().setEnabled(true); // Включення легенди, якщо потрібно
+
+        taskTypesChart.invalidate(); // Оновлення графіка
     }
+
 
     private void loadDataForCharts() {
         getStatsMonths();

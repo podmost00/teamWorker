@@ -14,6 +14,15 @@ public class User implements Serializable {
     private List<Position> position;
     private List<Role> roles;
 
+
+    public User() {
+    }
+
+    public User(String name, String surname) {
+        this.name = name;
+        this.surname = surname;
+    }
+
     public int getId() {
         return id;
     }

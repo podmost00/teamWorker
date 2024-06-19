@@ -1,58 +1,98 @@
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="8dp">
+    android:layout_marginEnd="3dp"
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+    android:background="@drawable/task_style"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_row="0"
+        android:layout_column="2"
+        android:orientation="vertical"
+        android:paddingBottom="5dp"
+        android:rowCount="3">
 
         <TextView
-            android:id="@+id/task_name"
-            android:layout_width="0dp"
+            android:id="@+id/task_project_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Task Name"
+            android:background="@color/white"
+            android:backgroundTint="#3F51B5"
+            android:ellipsize="end"
+            android:minLines="1"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:text="Project"
+            android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/button_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+
+            android:src="@android:drawable/ic_menu_help" />
+        <ImageView
+            android:id="@+id/button_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+
+            android:src="@android:drawable/ic_menu_more" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="222dp"
+        android:layout_height="wrap_content"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/task_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Task Title"
             android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/task_priority"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="High"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_name"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="4dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="4dp"
+            android:paddingRight="6dp"
+            android:paddingBottom="4dp"
+            android:text="Високий"
+            android:textColor="@android:color/holo_red_light" />
+
 
         <TextView
-            android:id="@+id/task_assignee"
-            android:layout_width="0dp"
+            android:id="@+id/task_assigned_to"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Assignee"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_priority"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="4dp"
+            android:text="Для: Dmytro Zima" />
 
         <TextView
-            android:id="@+id/task_due_time"
-            android:layout_width="0dp"
+            android:id="@+id/task_due_date"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Due Time"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_assignee"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="4dp"
+            android:text="04.05.2024, 13:44" />
 
-        <TextView
-            android:id="@+id/task_project_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Project Name"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_due_time"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+</GridLayout>

@@ -44,7 +44,7 @@ public class Login extends AppCompatActivity {
     private Button loginButton;
     private TextView regLink;
     private VolleyService volleyService;
-    private static final String AUTH_API = "http://192.168.0.108:8080/api/v1/auth/";
+    private static final String AUTH_API = "http://192.168.56.1:8080/api/v1/auth/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +89,7 @@ public class Login extends AppCompatActivity {
                             String token = response.getString("token");
                             String username = response.getString("username");
                             tokenStorage.saveToken(token);
-                            String userUrl = "http://192.168.0.108:8080/api/v1/users/get/" + username;
+                            String userUrl = "http://192.168.56.1:8080/api/v1/users/get/" + username;
                             JsonObjectRequest userRequest = new JsonObjectRequest(Request.Method.GET, userUrl, null,
                                     new Response.Listener<JSONObject>() {
                                         @Override
