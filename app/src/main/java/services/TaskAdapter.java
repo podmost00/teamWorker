@@ -18,12 +18,18 @@ import com.android.volley.VolleyError;
 import com.example.teamworker.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import callback.GetArrayCallback;
 import model.Task;
+import user.UserTasks;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
@@ -69,21 +75,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         notifyDataSetChanged();
     }
 
-    public Task getTask(int position) {
-        return tasks.get(position);
-    }
-
-    public void removeTask(int position) {
-        tasks.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    public void moveTask(int fromPosition, int toPosition) {
-        Task task = tasks.remove(fromPosition);
-        tasks.add(toPosition, task);
-        notifyItemMoved(fromPosition, toPosition);
-    }
-
     private void showChangeStatusDialog(Task task) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_change_status, null);
@@ -104,12 +95,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 newStatus = "IN_PROGRESS";
             } else if (selectedId == R.id.radio_on_review) {
                 newStatus = "ON_REVIEW";
-            } else if (selectedId == R.id.radio_released) {
-                newStatus = "RELEASED";
             }
 
+            task.setLastEditTime(new Date());
             updateTaskStage(task, newStatus);
             changeStatusDialog.dismiss();
+
+
         });
 
         changeStatusDialog = builder.create();
@@ -133,7 +125,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         TextView taskTimeStart = view.findViewById(R.id.info_task_time_start);
         TextView taskTimeEnd = view.findViewById(R.id.info_task_time_end);
         TextView taskDescription = view.findViewById(R.id.info_task_description);
-
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
         //------------------//
 
         taskName.setText(task.getName());
@@ -156,28 +148,27 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         taskAssignedTo.setText(task.getAssignee());
         taskCreator.setText(task.getCreator());
         taskProject.setText(task.getProject().getName());
-        taskDueTime.setText(task.getDueTime().toLocaleString());
+        taskDueTime.setText(formatter.format(task.getDueTime()));
 
         if(task.isOverdue()){
             taskDueTime.setTextColor(Color.rgb(0, 0, 0));
             taskDueTime.setBackgroundColor(Color.rgb(255, 99, 71));
         }
 
-
         if(Objects.equals(task.getLastEditTime(), null)){
             taskLastEdit.setVisibility(View.INVISIBLE);
         } else {
-            taskLastEdit.setText(task.getLastEditTime().toLocaleString());
+            taskLastEdit.setText(formatter.format(task.getLastEditTime()));
         }
 
         if(Objects.equals(task.getStartTime(), null)){
             taskTimeStart.setVisibility(View.INVISIBLE);
         } else {
-            taskTimeStart.setText(task.getStartTime().toLocaleString());
+            taskTimeStart.setText(formatter.format(task.getStartTime()));
         }
 
         if(Objects.equals(task.getStage(), "RELEASED")){
-            taskTimeEnd.setText(task.getEndTime().toLocaleString());
+            taskTimeEnd.setText(formatter.format(task.getEndTime()));
         } else {
             taskTimeEnd.setVisibility(View.INVISIBLE);
         }
@@ -190,24 +181,29 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         dialog.show();
     }
 
-
-
-
     private void updateTaskStage(Task task, String newStage) {
         task.setStage(newStage);
         String url = basePUTUrl + "/update/" + task.getId() + "/" + newStage;
         volleyService.makePUTObjectRequest(url, task.toJson(), new GetArrayCallback() {
             @Override
             public void onSuccess(JSONArray response) {
-
+                // Завдання оновлено на сервері
+                refreshTasks();
             }
 
             @Override
             public void onError(VolleyError error) {
-
+                // Обробка помилки
             }
         });
     }
+    private void refreshTasks() {
+        if (context instanceof UserTasks) {
+            ((UserTasks) context).loadTasks();
+        }
+    }
+
+
 
     public class TaskViewHolder extends RecyclerView.ViewHolder {
         private TextView taskName;
@@ -238,6 +234,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         }
 
         public void bind(Task task, OnTaskClickListener listener) {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
             taskName.setText(task.getName());
             if (Objects.equals(task.getPriority(), "HIGH")) {
                 taskPriority.setText("Високий");
@@ -254,17 +251,32 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             }
             taskProject.setText(task.getProject().getName());
             taskAssignedTo.setText("Для: " + task.getAssignee());
-            taskDueTime.setText(task.getDueTime().toLocaleString());
-            itemView.setOnClickListener(v -> listener.onTaskClick(task));
+            taskDueTime.setText("Дедлайн: " + formatter.format(task.getDueTime()));
             if (task.getStage().equals("RELEASED")) {
                 changeStatusButton.setVisibility(View.INVISIBLE);
             }
+            if(task.isOverdue()){
+                taskDueTime.setTextColor(Color.rgb(0, 0, 0));
+                taskDueTime.setBackgroundColor(Color.rgb(255, 99, 71));
+            }
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onTaskClick(task);
+                }
+            });
+
+            infoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showTaskInfoDialog(task);
+                }
+            });
         }
-
     }
+
     public interface OnTaskClickListener {
         void onTaskClick(Task task);
     }
 }
-

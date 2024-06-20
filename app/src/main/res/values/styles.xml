@@ -5,5 +5,7 @@
 
         <item name="android:fontFamily">@font/roboto</item>
         <item name="fontFamily">@font/roboto</item>
+        <item name="android:textColorSecondary">@color/menu_icon_color</item>
     </style>
+
 </resources>

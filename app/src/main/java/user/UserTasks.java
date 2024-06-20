@@ -80,7 +80,7 @@ public class UserTasks extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_tasks) {
-            // Toast.makeText(this, "Завдання натиснуто", Toast.LENGTH_SHORT).show();
+
             startActivity(new Intent(this, UserTasks.class));
             return true;
         } else if (item.getItemId() == R.id.action_statistics) {
@@ -99,7 +99,7 @@ public class UserTasks extends AppCompatActivity {
     }
 
 
-    private void loadTasks() {
+    public void loadTasks() {
         loadTasks("CREATED", createdAdapter);
         loadTasks("IN_PROGRESS", inProgressAdapter);
         loadTasks("ON_REVIEW", onReviewAdapter);

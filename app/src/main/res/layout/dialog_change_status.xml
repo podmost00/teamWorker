@@ -37,19 +37,13 @@
                 android:id="@+id/radio_in_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="В процесі" />
+                android:text="Розпочати" />
 
             <RadioButton
                 android:id="@+id/radio_on_review"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="На перевірці" />
-
-            <RadioButton
-                android:id="@+id/radio_released"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Виконані" />
+                android:text="На перевірку" />
 
             <Button
                 android:id="@+id/button_change_status"

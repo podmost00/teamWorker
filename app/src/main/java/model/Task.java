@@ -28,12 +28,14 @@ public class Task implements Serializable {
     private User assignee;
     private Project project;
 
-    SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy, HH:mm:ss");
+    SimpleDateFormat format1 = new SimpleDateFormat("MM/dd/yyyy, HH:mm:ss");
     SimpleDateFormat format2 = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
+
+
 
     public Task(JSONObject jsonObject) {
         try {
-            Log.d("ZAPROS", jsonObject.toString());
+//            Log.d("ZAPROS", jsonObject.toString());
             this.id = jsonObject.getInt("id");
             this.name = jsonObject.getString("name");
             this.dueTime = format2.parse(jsonObject.getString("dueTime"));
@@ -68,10 +70,10 @@ public class Task implements Serializable {
             String creatorName = creatorObject.getString("name");
             String creatorSurname =  creatorObject.getString("surname");
             this.creator = new User(creatorName, creatorSurname);
-
+            this.overdue = false;
                 if(Objects.equals(getStage(), "RELEASED")){
                     this.endTime = format1.parse(jsonObject.getString("endTime"));
-                    this.overdue = dueTime.getTime() <= endTime.getTime();
+
                 } else {
                     this.endTime = null;
                 }
@@ -175,7 +177,10 @@ public class Task implements Serializable {
     }
 
     public boolean isOverdue() {
-        return overdue;
+        Date currentDate = new Date();
+        if(endTime!=null){
+            return !(endTime.getTime()<=dueTime.getTime());
+        } else return !(currentDate.getTime()<=dueTime.getTime());
     }
 
     public void setOverdue(boolean overdue) {
