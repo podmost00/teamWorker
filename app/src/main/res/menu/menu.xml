@@ -13,6 +13,12 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_refresh"
+        android:title="Оновити"
+        android:icon="@android:drawable/ic_popup_sync"
+        app:showAsAction="always"
+        />
+    <item
         android:id="@+id/action_logout"
         android:title="Вихід"
         android:orderInCategory="100"

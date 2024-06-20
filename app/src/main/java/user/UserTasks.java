@@ -5,30 +5,25 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.teamworker.R;
 import com.android.volley.VolleyError;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import auth.login.Login;
 import callback.GetArrayCallback;
 import model.Task;
 import services.TaskAdapter;
 import services.TokenStorageService;
 import services.VolleyService;
+
 
 public class UserTasks extends AppCompatActivity {
 
@@ -48,7 +43,6 @@ public class UserTasks extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         volleyService = new VolleyService(this);
 
@@ -74,30 +68,54 @@ public class UserTasks extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        MenuItem tasksItem = menu.findItem(R.id.action_tasks);
+        MenuItem statsItem = menu.findItem(R.id.action_statistics);
+
+        // Деактивація кнопки поточної активності
+        tasksItem.setEnabled(false);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_tasks) {
+        int id = item.getItemId();
+        Intent intent = null;
 
-            startActivity(new Intent(this, UserTasks.class));
+        if (id == R.id.action_tasks) {
+            intent = new Intent(this, UserTasks.class);
+        } else if (id == R.id.action_statistics) {
+            intent = new Intent(this, UserStats.class);
+        } else if (id == R.id.action_logout) {
+            logoutAndExit();
             return true;
-        } else if (item.getItemId() == R.id.action_statistics) {
-            startActivity(new Intent(this, UserStats.class));
+        } else if (id == R.id.action_refresh) {
+            loadTasks();
             return true;
-        } else if (item.getItemId() == R.id.action_logout) {
-            Toast.makeText(this, "Вихід", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, Login.class));
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
         }
-    }
-    private void onTaskClick(Task task) {
-        //task click
+
+        if (intent != null) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
+    private void logoutAndExit() {
+        TokenStorageService tokenStorage = new TokenStorageService(this);
+        tokenStorage.logOut();
+
+        Intent intent = new Intent(this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void onTaskClick(Task task) {
+        // Обробка натискання на завдання
+    }
 
     public void loadTasks() {
         loadTasks("CREATED", createdAdapter);

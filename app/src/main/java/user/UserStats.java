@@ -18,7 +18,9 @@ import com.example.teamworker.R;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -29,6 +31,9 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONArray;
@@ -36,7 +41,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import auth.login.Login;
 import callback.GetArrayCallback;
@@ -83,24 +90,49 @@ public class UserStats extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        MenuItem tasksItem = menu.findItem(R.id.action_tasks);
+        MenuItem statsItem = menu.findItem(R.id.action_statistics);
+
+        tasksItem.setEnabled(false);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_tasks) {
-            startActivity(new Intent(this, UserTasks.class));
+        int id = item.getItemId();
+        Intent intent = null;
+
+        if (id == R.id.action_tasks) {
+            intent = new Intent(this, UserTasks.class);
+        } else if (id == R.id.action_statistics) {
+            intent = new Intent(this, UserStats.class);
+        } else if (id == R.id.action_logout) {
+            logoutAndExit();
             return true;
-        } else if (item.getItemId() == R.id.action_statistics) {
-            startActivity(new Intent(this, UserStats.class));
+        } else if (id == R.id.action_refresh) {
+            loadSummaryData();
+            loadDataForCharts();
             return true;
-        } else if (item.getItemId() == R.id.action_logout) {
-            Toast.makeText(this, "Вихід", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, Login.class));
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
         }
+
+        if (intent != null) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void logoutAndExit() {
+        TokenStorageService tokenStorage = new TokenStorageService(this);
+        tokenStorage.logOut();
+
+        Intent intent = new Intent(this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
 
@@ -114,69 +146,99 @@ public class UserStats extends AppCompatActivity {
 
     private void setupLineChart() {
         tasksPerMonthChart.getDescription().setEnabled(false);
-        tasksPerMonthChart.getXAxis().setLabelRotationAngle(45);
-        tasksPerMonthChart.getAxisLeft().setAxisMinimum(0);
+        tasksPerMonthChart.setDrawGridBackground(false);
+        tasksPerMonthChart.setTouchEnabled(true);
+        tasksPerMonthChart.setDragEnabled(true);
+        tasksPerMonthChart.setScaleEnabled(true);
+        tasksPerMonthChart.setPinchZoom(true);
 
-        // Налаштування позиції осі X
         XAxis xAxis = tasksPerMonthChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
-        xAxis.setLabelCount(6, true); // 6 міток, рівномірно розподілених
+        xAxis.setLabelCount(6, true);
+        xAxis.setDrawGridLines(false);
 
-        // Налаштування осі Y
-        tasksPerMonthChart.getAxisRight().setEnabled(false); // Відключення правої осі Y
-        tasksPerMonthChart.getAxisLeft().setDrawGridLines(false); // Відключення сітки на лівій осі Y
-        tasksPerMonthChart.getAxisLeft().setAxisMinimum(0f); // Мінімальне значення осі Y
-
-        // Налаштування легенди
-        tasksPerMonthChart.getLegend().setEnabled(true); // Включення легенди, якщо потрібно
-
-        tasksPerMonthChart.invalidate(); // Оновлення графіка
+        YAxis leftAxis = tasksPerMonthChart.getAxisLeft();
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setGranularity(1f);
+        leftAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+        tasksPerMonthChart.getAxisRight().setEnabled(false);
+        tasksPerMonthChart.getRendererLeftYAxis().getPaintGrid().setColor(Color.BLACK);
+        tasksPerMonthChart.getRendererLeftYAxis().getPaintAxisLine().setColor(Color.BLACK);
+        tasksPerMonthChart.setScaleYEnabled(true);
+        tasksPerMonthChart.setScaleXEnabled(true);
+        tasksPerMonthChart.invalidate();
     }
 
 
     private void setupPieChart() {
         taskCompletionStagesChart.setUsePercentValues(true);
         taskCompletionStagesChart.getDescription().setEnabled(false);
-        taskCompletionStagesChart.setDrawHoleEnabled(true);
+        taskCompletionStagesChart.setDrawHoleEnabled(false);
         taskCompletionStagesChart.setHoleColor(Color.WHITE);
         taskCompletionStagesChart.setTransparentCircleColor(Color.WHITE);
         taskCompletionStagesChart.setTransparentCircleAlpha(110);
         taskCompletionStagesChart.setHoleRadius(58f);
         taskCompletionStagesChart.setTransparentCircleRadius(61f);
-        taskCompletionStagesChart.setDrawCenterText(true);
-
-        // Додаткові налаштування (якщо потрібно)
-        taskCompletionStagesChart.setEntryLabelColor(Color.BLACK); // Колір тексту на діаграмі
-        taskCompletionStagesChart.setEntryLabelTextSize(12f); // Розмір тексту на діаграмі
-
-        // Налаштування легенди
-        taskCompletionStagesChart.getLegend().setEnabled(true); // Включення легенди, якщо потрібно
-
-        taskCompletionStagesChart.invalidate(); // Оновлення діаграми
+        taskCompletionStagesChart.setDrawCenterText(false);
+        taskCompletionStagesChart.setEntryLabelColor(Color.BLACK);
+        taskCompletionStagesChart.setEntryLabelTextSize(14f);
+        taskCompletionStagesChart.setDrawEntryLabels(false);
+        taskCompletionStagesChart.getLegend().setEnabled(true);
+        taskCompletionStagesChart.getLegend().setForm(Legend.LegendForm.CIRCLE);
+        taskCompletionStagesChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        taskCompletionStagesChart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        taskCompletionStagesChart.getLegend().setOrientation(Legend.LegendOrientation.VERTICAL);
+        taskCompletionStagesChart.getLegend().setDrawInside(false);
+        taskCompletionStagesChart.invalidate();
     }
+
 
 
     private void setupBarChart() {
         taskTypesChart.getDescription().setEnabled(false);
-        taskTypesChart.getAxisLeft().setAxisMinimum(0);
+        taskTypesChart.setDrawGridBackground(false);
+        taskTypesChart.setDrawBarShadow(false);
+        taskTypesChart.setPinchZoom(true);
+        taskTypesChart.setDrawValueAboveBar(true);
+        taskTypesChart.setMaxVisibleValueCount(60);
 
-        // Налаштування осі X
         XAxis xAxis = taskTypesChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
-        xAxis.setLabelCount(6, true); // 6 міток, рівномірно розподілених
+        xAxis.setLabelCount(6, true);
+        xAxis.setDrawGridLines(false);
 
-        // Налаштування осі Y
-        taskTypesChart.getAxisRight().setEnabled(false); // Відключення правої осі Y
-        taskTypesChart.getAxisLeft().setDrawGridLines(false); // Відключення сітки на лівій осі Y
-        taskTypesChart.getAxisLeft().setAxisMinimum(0f); // Мінімальне значення осі Y
+        YAxis leftAxis = taskTypesChart.getAxisLeft();
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setGranularity(1f);
+        leftAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+        taskTypesChart.getAxisRight().setEnabled(false);
 
-        // Налаштування легенди
-        taskTypesChart.getLegend().setEnabled(true); // Включення легенди, якщо потрібно
+        Legend legend = taskTypesChart.getLegend();
+        legend.setEnabled(true);
+        legend.setForm(Legend.LegendForm.SQUARE);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend.setDrawInside(false);
 
-        taskTypesChart.invalidate(); // Оновлення графіка
+        taskTypesChart.invalidate();
     }
+
+
 
 
     private void loadDataForCharts() {
@@ -263,18 +325,28 @@ public class UserStats extends AppCompatActivity {
             @Override
             public void onSuccess(JSONArray response) {
                 List<Entry> entries = new ArrayList<>();
+                List<String> labels = new ArrayList<>();
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject monthData = response.getJSONObject(i);
                         String month = monthData.getString("name");
                         int taskCount = monthData.getInt("number");
                         entries.add(new Entry(i, taskCount));
+                        labels.add(month);
                     }
-                    LineDataSet dataSet = new LineDataSet(entries, "Завдання по місяцях");
-                    dataSet.setColor(Color.BLUE);
-                    dataSet.setValueTextColor(Color.BLACK);
+                    LineDataSet dataSet = new LineDataSet(entries, "");
+                    dataSet.setColor(Color.rgb(63,81,181));
+                    dataSet.setCircleColor(Color.rgb(63,81,181));
+                    dataSet.setLineWidth(2f);
+                    dataSet.setCircleRadius(4f);
+                    dataSet.setValueTextSize(10f);
+                    dataSet.setDrawCircleHole(false);
+
                     LineData lineData = new LineData(dataSet);
                     tasksPerMonthChart.setData(lineData);
+
+                    tasksPerMonthChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
+
                     tasksPerMonthChart.invalidate();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -302,11 +374,43 @@ public class UserStats extends AppCompatActivity {
                         int taskCount = stageData.getInt("number");
                         entries.add(new PieEntry(taskCount, stageName));
                     }
-                    PieDataSet dataSet = new PieDataSet(entries, "Етапи виконання завдань");
-                    dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+
+                    int[] colors = {
+                            Color.rgb(63, 81, 181),
+                            Color.rgb(255, 153, 0),
+                            Color.rgb(87, 169, 83),
+                            Color.rgb(220, 57, 18)
+                    };
+
+                    PieDataSet dataSet = new PieDataSet(entries, "");
+                    dataSet.setColors(colors);
+
                     PieData pieData = new PieData(dataSet);
+                    pieData.setValueTextSize(14f);
+                    pieData.setValueTextColor(Color.WHITE);
+                    pieData.setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            return String.format("%.0f%%", value);
+                        }
+                    });
+
                     taskCompletionStagesChart.setData(pieData);
                     taskCompletionStagesChart.invalidate();
+
+                    taskCompletionStagesChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                        @Override
+                        public void onValueSelected(Entry e, Highlight h) {
+                            if (e instanceof PieEntry) {
+                                PieEntry pe = (PieEntry) e;
+                                Toast.makeText(UserStats.this, pe.getLabel() + ": " + (int) pe.getValue(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected() {}
+                    });
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -319,6 +423,8 @@ public class UserStats extends AppCompatActivity {
         });
     }
 
+
+
     private void getStatsType() {
         String url = baseUrl + "/get/stats/types/";
         volleyService.makeGetArrayRequest(url, new GetArrayCallback() {
@@ -326,21 +432,63 @@ public class UserStats extends AppCompatActivity {
             public void onSuccess(JSONArray response) {
                 List<BarEntry> entries = new ArrayList<>();
                 List<String> labels = new ArrayList<>();
+                final Map<Integer, String> indexToNameMap = new HashMap<>();
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject typeData = response.getJSONObject(i);
                         String typeName = typeData.getString("name");
                         int taskCount = typeData.getInt("number");
-                        entries.add(new BarEntry(i, taskCount));
                         labels.add(typeName);
+                        entries.add(new BarEntry(i, taskCount));
+                        indexToNameMap.put(i, typeName);
                     }
-                    BarDataSet dataSet = new BarDataSet(entries, "Типи завдань");
-                    dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-                    BarData barData = new BarData(dataSet);
-                    taskTypesChart.setData(barData);
 
+                    BarDataSet dataSet = new BarDataSet(entries, "Типи завдань");
+
+
+                    int[] colors = {
+                            Color.rgb(63, 81, 181),
+                            Color.rgb(255, 153, 0),
+                            Color.rgb(87, 169, 83),
+                            Color.rgb(220, 57, 18),
+                            Color.rgb(156, 39, 176),
+                            Color.rgb(0, 150, 136)
+                    };
+                    dataSet.setColors(colors);
+                    dataSet.setValueTextSize(10f);
+                    dataSet.setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            return String.valueOf((int) value);
+                        }
+                    });
+
+                    BarData barData = new BarData(dataSet);
+                    barData.setBarWidth(0.9f);
+
+                    taskTypesChart.setData(barData);
                     taskTypesChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
-                    taskTypesChart.invalidate(); // refresh chart
+                    taskTypesChart.invalidate();
+
+                    taskTypesChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                        @Override
+                        public void onValueSelected(Entry e, Highlight h) {
+                            if (e instanceof BarEntry) {
+                                int index = (int) e.getX();
+                                String typeName = indexToNameMap.get(index);
+                                if (typeName != null) {
+                                    Toast.makeText(getApplicationContext(), typeName, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Невідомий тип", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected() {
+                            // Do nothing
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

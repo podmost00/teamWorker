@@ -46,6 +46,7 @@
         android:layout_margin="15dp"
         android:fontFamily="@font/roboto"
         android:hint="Введіть пароль*"
+        android:password="true"
         android:text="wntrd"
         android:textAlignment="center"
         android:textSize="12sp"
