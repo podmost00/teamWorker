@@ -13,23 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_row="0"
-        android:layout_column="2"
+        android:layout_column="3"
         android:orientation="vertical"
         android:paddingBottom="5dp"
+        android:paddingTop="7dp"
         android:rowCount="3">
-
-        <TextView
-            android:id="@+id/task_project_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:backgroundTint="#3F51B5"
-            android:ellipsize="end"
-            android:minLines="1"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp"
-            android:text="Project"
-            android:textColor="@color/white" />
 
         <ImageView
             android:id="@+id/button_info"
@@ -38,6 +26,7 @@
             android:layout_marginTop="8dp"
 
             android:src="@android:drawable/ic_menu_help" />
+
         <ImageView
             android:id="@+id/button_options"
             android:layout_width="match_parent"
@@ -49,7 +38,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="222dp"
+        android:layout_width="185dp"
         android:layout_height="wrap_content"
         android:layout_row="0"
         android:layout_column="0"
@@ -94,5 +83,20 @@
             android:text="04.05.2024, 13:44" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/task_project_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_row="0"
+        android:layout_column="2"
+        android:background="@color/white"
+        android:backgroundTint="#3F51B5"
+        android:ellipsize="end"
+        android:minLines="1"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:text="Project"
+        android:textColor="@color/white" />
 
 </GridLayout>

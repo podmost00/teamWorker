@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class Task implements Serializable {
     private int id;
@@ -27,23 +28,29 @@ public class Task implements Serializable {
     private User assignee;
     private Project project;
 
-    SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
+    SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy, HH:mm:ss");
+    SimpleDateFormat format2 = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
 
     public Task(JSONObject jsonObject) {
         try {
             Log.d("ZAPROS", jsonObject.toString());
             this.id = jsonObject.getInt("id");
             this.name = jsonObject.getString("name");
-            this.dueTime = format.parse(jsonObject.getString("dueTime"));
+            this.dueTime = format2.parse(jsonObject.getString("dueTime"));
             this.stage = jsonObject.getString("stage");
             this.description = jsonObject.getString("description");
-            this.createTime = format.parse(jsonObject.getString("createTime"));
-            this.lastEditTime = format.parse(jsonObject.getString("lastEditTime"));
+            this.createTime = format1.parse(jsonObject.getString("createTime"));
+
+                if (jsonObject.getString("lastEditTime").equals("")) {
+                    this.lastEditTime = null;
+                } else {
+                    this.lastEditTime = format1.parse(jsonObject.getString("lastEditTime"));
+                }
 
                 if (jsonObject.getString("startTime").equals("")) {
                     this.startTime = null;
                 } else {
-                    this.startTime = format.parse(jsonObject.getString("startTime"));
+                    this.startTime = format1.parse(jsonObject.getString("startTime"));
                 }
 
             this.priority = jsonObject.getString("priority");
@@ -57,12 +64,22 @@ public class Task implements Serializable {
             String assigneeSurname =  assigneeObject.getString("surname");
             this.assignee = new User(assigneeName, assigneeSurname);
 
-
-
             JSONObject creatorObject = jsonObject.getJSONObject("creator");
             String creatorName = creatorObject.getString("name");
             String creatorSurname =  creatorObject.getString("surname");
             this.creator = new User(creatorName, creatorSurname);
+
+                if(Objects.equals(getStage(), "RELEASED")){
+                    this.endTime = format1.parse(jsonObject.getString("endTime"));
+                    this.overdue = dueTime.getTime() <= endTime.getTime();
+                } else {
+                    this.endTime = null;
+                }
+
+
+
+
+
 
         } catch (JSONException | ParseException e) {
             e.printStackTrace();

@@ -116,6 +116,83 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         changeStatusDialog.show();
     }
 
+    private void showTaskInfoDialog(Task task) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_task_info, null);
+        builder.setView(view);
+
+        TextView taskName = view.findViewById(R.id.info_task_name);
+        TextView taskPriority = view.findViewById(R.id.info_task_priority);
+        TextView taskType = view.findViewById(R.id.info_task_type);
+        TextView taskStage = view.findViewById(R.id.info_task_stage);
+        TextView taskAssignedTo = view.findViewById(R.id.info_task_assigned_to);
+        TextView taskCreator = view.findViewById(R.id.info_task_creator);
+        TextView taskProject = view.findViewById(R.id.info_task_project);
+        TextView taskDueTime = view.findViewById(R.id.info_task_due_date);
+        TextView taskLastEdit = view.findViewById(R.id.info_task_last_edit);
+        TextView taskTimeStart = view.findViewById(R.id.info_task_time_start);
+        TextView taskTimeEnd = view.findViewById(R.id.info_task_time_end);
+        TextView taskDescription = view.findViewById(R.id.info_task_description);
+
+        //------------------//
+
+        taskName.setText(task.getName());
+
+        if (Objects.equals(task.getPriority(), "HIGH")) {
+            taskPriority.setText("Високий");
+            taskPriority.setTextColor(Color.rgb(0, 0, 0));
+            taskPriority.setBackgroundColor(Color.rgb(255, 99, 71));
+        } else if (Objects.equals(task.getPriority(), "MEDIUM")) {
+            taskPriority.setText("Середній");
+            taskPriority.setTextColor(Color.rgb(0, 0, 0));
+            taskPriority.setBackgroundColor(Color.rgb(255, 191, 102));
+        } else {
+            taskPriority.setText("Низький");
+            taskPriority.setTextColor(Color.rgb(0, 0, 0));
+            taskPriority.setBackgroundColor(Color.rgb(122, 227, 157));
+        }
+        taskType.setText(task.getType());
+        taskStage.setText(task.getStage());
+        taskAssignedTo.setText(task.getAssignee());
+        taskCreator.setText(task.getCreator());
+        taskProject.setText(task.getProject().getName());
+        taskDueTime.setText(task.getDueTime().toLocaleString());
+
+        if(task.isOverdue()){
+            taskDueTime.setTextColor(Color.rgb(0, 0, 0));
+            taskDueTime.setBackgroundColor(Color.rgb(255, 99, 71));
+        }
+
+
+        if(Objects.equals(task.getLastEditTime(), null)){
+            taskLastEdit.setVisibility(View.INVISIBLE);
+        } else {
+            taskLastEdit.setText(task.getLastEditTime().toLocaleString());
+        }
+
+        if(Objects.equals(task.getStartTime(), null)){
+            taskTimeStart.setVisibility(View.INVISIBLE);
+        } else {
+            taskTimeStart.setText(task.getStartTime().toLocaleString());
+        }
+
+        if(Objects.equals(task.getStage(), "RELEASED")){
+            taskTimeEnd.setText(task.getEndTime().toLocaleString());
+        } else {
+            taskTimeEnd.setVisibility(View.INVISIBLE);
+        }
+
+        taskDescription.setText(task.getDescription());
+
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+
+
     private void updateTaskStage(Task task, String newStage) {
         task.setStage(newStage);
         String url = basePUTUrl + "/update/" + task.getId() + "/" + newStage;
@@ -132,14 +209,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         });
     }
 
-    class TaskViewHolder extends RecyclerView.ViewHolder {
-
+    public class TaskViewHolder extends RecyclerView.ViewHolder {
         private TextView taskName;
         private TextView taskPriority;
         private TextView taskAssignedTo;
         private TextView taskDueTime;
         private TextView taskProject;
         private ImageView changeStatusButton;
+        private ImageView infoButton;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -149,35 +226,45 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             taskDueTime = itemView.findViewById(R.id.task_due_date);
             taskProject = itemView.findViewById(R.id.task_project_title);
             changeStatusButton = itemView.findViewById(R.id.button_options);
+            infoButton = itemView.findViewById(R.id.button_info);
+
             changeStatusButton.setOnClickListener(v -> {
                 showChangeStatusDialog(tasks.get(getAdapterPosition()));
+            });
+
+            infoButton.setOnClickListener(v -> {
+                showTaskInfoDialog(tasks.get(getAdapterPosition()));
             });
         }
 
         public void bind(Task task, OnTaskClickListener listener) {
-
             taskName.setText(task.getName());
-            if (Objects.equals(task.getPriority(), "HIGH")){
+            if (Objects.equals(task.getPriority(), "HIGH")) {
                 taskPriority.setText("Високий");
-                taskPriority.setTextColor(Color.rgb(0,0,0));
-                taskPriority.setBackgroundColor(Color.rgb(255,99,71));
-            } else if (Objects.equals(task.getPriority(), "MEDIUM")){
+                taskPriority.setTextColor(Color.rgb(0, 0, 0));
+                taskPriority.setBackgroundColor(Color.rgb(255, 99, 71));
+            } else if (Objects.equals(task.getPriority(), "MEDIUM")) {
                 taskPriority.setText("Середній");
-                taskPriority.setTextColor(Color.rgb(0,0,0));
-                taskPriority.setBackgroundColor(Color.rgb(255,191,102));
+                taskPriority.setTextColor(Color.rgb(0, 0, 0));
+                taskPriority.setBackgroundColor(Color.rgb(255, 191, 102));
             } else {
                 taskPriority.setText("Низький");
-                taskPriority.setTextColor(Color.rgb(0,0,0));
-                taskPriority.setBackgroundColor(Color.rgb(122,227,157));
+                taskPriority.setTextColor(Color.rgb(0, 0, 0));
+                taskPriority.setBackgroundColor(Color.rgb(122, 227, 157));
             }
             taskProject.setText(task.getProject().getName());
             taskAssignedTo.setText("Для: " + task.getAssignee());
             taskDueTime.setText(task.getDueTime().toLocaleString());
             itemView.setOnClickListener(v -> listener.onTaskClick(task));
-        }
-    }
+            if (task.getStage().equals("RELEASED")) {
+                changeStatusButton.setVisibility(View.INVISIBLE);
+            }
 
+        }
+
+    }
     public interface OnTaskClickListener {
         void onTaskClick(Task task);
     }
 }
+
