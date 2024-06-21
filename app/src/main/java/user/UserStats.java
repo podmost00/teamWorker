@@ -34,7 +34,6 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,7 +64,7 @@ public class UserStats extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_main);
+        setContentView(R.layout.activity_user_stats);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -93,7 +92,7 @@ public class UserStats extends AppCompatActivity {
         MenuItem tasksItem = menu.findItem(R.id.action_tasks);
         MenuItem statsItem = menu.findItem(R.id.action_statistics);
 
-        tasksItem.setEnabled(false);
+        statsItem.setEnabled(false);
 
         return true;
     }

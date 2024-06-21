@@ -252,7 +252,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             taskProject.setText(task.getProject().getName());
             taskAssignedTo.setText("Для: " + task.getAssignee());
             taskDueTime.setText("Дедлайн: " + formatter.format(task.getDueTime()));
-            if (task.getStage().equals("RELEASED")) {
+            if (task.getStage().equals("RELEASED") || task.getStage().equals("ON_REVIEW")) {
                 changeStatusButton.setVisibility(View.INVISIBLE);
             }
             if(task.isOverdue()){
