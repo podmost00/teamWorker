@@ -1,0 +1,187 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/dialogue_style"
+    android:scrollbars="vertical">
+
+    <TextView
+        android:id="@+id/info_task_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Назва завдання"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_priorityTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Пріоритет"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_priority"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Пріоритет"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_typeTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Тип завдання"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Тип завдання"
+        android:paddingBottom="8dp"/>
+
+
+    <TextView
+        android:id="@+id/info_task_stageTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Стадія виконання"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_stage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Стадія виконання"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_assigned_toTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Виконавець"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_assigned_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Виконавець"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_creatorTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Автор завдання"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_creator"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Автор завдання"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_projectTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Проект"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_project"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Проект"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_due_dateTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Термін виконання"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_due_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Термін виконання"
+        android:paddingBottom="8dp"/>
+
+
+    <TextView
+        android:id="@+id/info_task_last_editTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Остання зміна"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_last_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Остання зміна"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_time_startTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Час початку"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_time_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Час початку"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_time_endTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Час завершення"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_time_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Час завершення"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/info_task_descriptionTXT"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Опис"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/info_task_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Опис"
+        android:paddingBottom="8dp"/>
+
+
+</LinearLayout>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:rotationX="0">
+
+
+    <TextView
+        android:id="@+id/login_label1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="148dp"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Авторизація"
+        android:textColor="#2C2C2C"
+        android:textColorHighlight="#393838"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/login_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/login_login"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:fontFamily="@font/roboto"
+        android:hint="Введіть логін*"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        android:text="wntrd@test.com"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.434" />
+
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_margin="15dp"
+        android:fontFamily="@font/roboto"
+        android:hint="Введіть пароль*"
+        android:password="true"
+        android:text="wntrd"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_login" />
+
+    <Button
+        android:id="@+id/login_loginButton"
+        android:layout_width="166dp"
+        android:layout_height="40dp"
+        android:layout_margin="15dp"
+        android:backgroundTint="#3F51B5"
+        android:text="Увійти"
+        app:cornerRadius="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_password" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_loginButton"
+        android:id="@+id/login_regLink"
+        android:layout_marginTop="10dp"
+        android:text="Зареєструватися"
+
+
+
+        />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
